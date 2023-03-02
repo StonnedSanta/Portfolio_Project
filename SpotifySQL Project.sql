@@ -26,8 +26,5 @@ WHERE
         OR artists LIKE '%DJ%'
 GROUP BY artists;
 
--- Which song attributes are most strongly correlated? What attributes seem to have very little correlation?
-
-
--- Which attributes have the most variability? Which tend to be the most similar among the Top 100 songs?
+-- Work in Progress
 
