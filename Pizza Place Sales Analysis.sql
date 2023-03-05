@@ -57,7 +57,7 @@ FROM
 GROUP BY p.size
 ORDER BY sales DESC;
 
--- Sales bby pizza's category
+-- Sales by pizza's category
 
 SELECT 
     b.category, FLOOR(SUM(o.quantity * p.price)) AS sales
@@ -80,7 +80,20 @@ FROM
         JOIN
     pizzas p ON o.pizza_id = p.pizza_id
 GROUP BY p.pizza_type_id
-ORDER BY sales DESC;
+ORDER BY sales DESC
+LIMIT 5;
+
+-- Worstsellers
+
+SELECT 
+    p.pizza_type_id, FLOOR(SUM(o.quantity * p.price)) AS sales
+FROM
+    order_details o
+        JOIN
+    pizzas p ON o.pizza_id = p.pizza_id
+GROUP BY p.pizza_type_id
+ORDER BY sales
+LIMIT 5;
 
 
 
