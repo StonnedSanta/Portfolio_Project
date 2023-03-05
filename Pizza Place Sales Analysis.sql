@@ -1,61 +1,86 @@
 create database pizzadb;
 use pizzadb;
 
--- How many customers do we have each day? Are there any peak hours?
-SELECT 
-    *
-FROM
-    orders;
+-- Orders placed each day
 
--- orders placed each day
 SELECT 
-    date, COUNT(order_id)
+    DAYNAME(date) AS days, COUNT(order_id) AS num_order
 FROM
     orders
-GROUP BY date;
+GROUP BY days;
 
--- peaks hours
+-- Sales by day
+
 SELECT 
-    time, COUNT(order_id)
+    DAYNAME(date) AS days,
+    FLOOR(SUM(b.quantity * c.price)) AS sales
+FROM
+    orders a
+        JOIN
+    order_details b ON a.order_id = b.order_id
+        JOIN
+    pizzas c ON b.pizza_id = c.pizza_id
+GROUP BY days
+ORDER BY sales DESC;
+
+-- Sales by month
+
+SELECT 
+    MONTHNAME(date) AS month,
+    FLOOR(SUM(o.quantity * p.price)) AS sales
+FROM
+    orders a
+        JOIN
+    order_details o ON a.order_id = o.order_id
+        JOIN
+    pizzas p ON o.pizza_id = p.pizza_id
+GROUP BY month
+ORDER BY sales DESC;
+
+-- Peaks hours
+
+SELECT 
+    HOUR(time), COUNT(order_id) AS orders
 FROM
     orders
-GROUP BY time;
+GROUP BY HOUR(time)
+ORDER BY orders DESC;
 
--- How many pizzas are typically in an order? Do we have any bestsellers
-SELECT 
-    *
-FROM
-    order_details;
+-- Sales by pizza's size
 
--- pizzas in an order
 SELECT 
-    order_id, COUNT(quantity)
+    p.size, FLOOR(SUM(o.quantity * p.price)) AS sales
 FROM
-    order_details
-GROUP BY order_id;
+    order_details o
+        JOIN
+    pizzas p ON o.pizza_id = p.pizza_id
+GROUP BY p.size
+ORDER BY sales DESC;
+
+-- Sales bby pizza's category
+
+SELECT 
+    b.category, FLOOR(SUM(o.quantity * p.price)) AS sales
+FROM
+    pizza_types b
+        JOIN
+    pizzas p ON b.pizza_type_id = p.pizza_type_id
+        JOIN
+    order_details o ON p.pizza_id = o.pizza_id
+GROUP BY b.category
+ORDER BY sales DESC;
+
 
 -- Bestsellers
-SELECT 
-    pizza_id, COUNT(quantity)
-FROM
-    order_details
-GROUP BY pizza_id;
 
--- How much money did we make this year? Can we indentify any seasonality in the sales?
 SELECT 
-    *
+    p.pizza_type_id, FLOOR(SUM(o.quantity * p.price)) AS sales
 FROM
-    pizzas;
-
--- year's revenue 
-SELECT 
-    pizzas.pizza_id, SUM(pizzas.price)
-FROM
-    pizzas
+    order_details o
         JOIN
-    order_details ON order_details.quantity
-GROUP BY pizzas.pizza_id;
-
+    pizzas p ON o.pizza_id = p.pizza_id
+GROUP BY p.pizza_type_id
+ORDER BY sales DESC;
 
 
 
