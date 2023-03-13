@@ -8,4 +8,5 @@ select tenure, count(id)
 from telecom_customer_churn
 group by tenure
 having tenure <=3
+
 -- work in progress
